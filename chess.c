@@ -1,10 +1,11 @@
 // By: Corey T
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-// constant for the chess board dimeensions
-const int EIGHT = 8;
-const int TWO = 2;
+#define EIGHT 8
+
 
 // defining the chess board as a 2D char array
 // and intializing starting piece position
@@ -27,19 +28,24 @@ typedef struct Index
     int column;
 } Index;
 
-// function for displaying the starting chess board to visualize it
-void display_board()
-{
-    for (int row = 0; row < EIGHT; row++)
-    {
-        for (int column = 0; column < EIGHT; column++)
-        {
-            printf("%s ", board[row][column]);
-        }
-        printf("\n");
-    }
 
-}
+// enum used to represnt the chess peice types
+typedef enum {
+    KING = 'K',QUEEN = 'Q',BISHOP = 'B',
+    KNIGHT = 'N',ROOK = 'R',PAWN = 'P'
+} Type;
+
+// enum type used to represent the color of the peice type
+typedef enum {BLACK, WHITE}Color;
+
+// defining a struct used to represent a chess piece type and color
+typedef struct Piece
+{
+    Color color;
+    Type type;
+
+}Piece;
+
 
 
 // function used for searching for a player's chess piece
@@ -72,6 +78,86 @@ Index search (char* grid[EIGHT][EIGHT], char* target)
 
 
 
+
+
+// method to change positions with
+void swap_positions(int src_row, int src_col, int dest_row, int dest_col)
+{
+    char* temp = board[dest_row][dest_col];
+    board[dest_row][dest_col] = board[src_row][src_col];
+    board[src_row][src_col] = temp;
+}
+
+
+// method indicating that a move was illigal
+void illegal()
+{
+    printf("ILLMOVE\n");
+}
+
+// method for legal moves for pawn pieces
+void pawn_move(char* board[EIGHT][EIGHT], int row, int column)
+{
+    if (row == 1 && strcmp(board[row + 1][column], "**") == 0)
+    {
+        // allow the move
+        printf("");
+
+
+    }
+    else
+    {
+        // the move is illegal
+        illegal();
+    }
+
+
+}
+
+// method to execute a move operation
+void move(char* board[EIGHT][EIGHT], char* target, int new_row, int new_col)
+{
+
+    Index result;
+    result = search(board, target);
+
+    if (result.row == -1 || result.column == -1)
+    {
+        printf("Piece not found on the board.\n");
+        return;
+    }
+
+    if(strcmp(target,"WP") == 0 || strcmp(target, "BP") == 0)
+    {
+        pawn_move(board, new_col, new_col);
+         swap_positions(result.row, result.column, new_row, new_col);
+    }
+
+}
+
+
+
+
+// function for displaying the starting chess board to visualize it
+void display_board()
+{
+    for (int row = 0; row < 8; row++)
+    {
+        for (int column = 0; column < 8; column++)
+        {
+            printf("%s ", board[row][column]);
+        }
+        printf("\n");
+    }
+
+}
+
+
+
+
+
+
+
 // this function hndles all chess move operations based on user input
 void write ()
 {
@@ -100,7 +186,13 @@ int main()
 
     printf("\n\nThe row index value of BQ is: %d\n The column index value of BQ is: %d\n\n", result.row, result.column);
 
+    move(board, "WP", 2, 0);
 
+    display_board();
+
+    move(board, "BP", 6, 0);
+
+    display_board();
 
 
     return 0;
